@@ -4,13 +4,22 @@ const appConfig = useAppConfig()
 const { isHelpSlideoverOpen } = useDashboard()
 
 const links = [{
-  id: 'home',
-  label: 'Home',
+  id: 'dashboard',
+  label: 'Dashboard',
   icon: 'i-heroicons-home',
   to: '/',
   tooltip: {
-    text: 'Home',
-    shortcuts: ['G', 'H']
+    text: 'Dashboard',
+    shortcuts: ['G', 'D']
+  }
+}, {
+  id: 'modelfiels',
+  label: 'Model Files',
+  icon: 'i-heroicons-document-text',
+  to: '/modelfiles',
+  tooltip: {
+    text: 'Model Files',
+    shortcuts: ['G', 'M']
   }
 }, {
   id: 'inbox',

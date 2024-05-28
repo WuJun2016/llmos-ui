@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { sub } from 'date-fns'
-import type { Period, Range } from '~/types'
+import type {Period, Range} from '~/types'
 
 const { isNotificationsSlideoverOpen } = useDashboard()
 
@@ -21,7 +21,7 @@ const period = ref<Period>('daily')
 <template>
   <UDashboardPage>
     <UDashboardPanel grow>
-      <UDashboardNavbar title="Home">
+      <UDashboardNavbar title="Dashboard">
         <template #right>
           <UTooltip
             text="Notifications"
@@ -58,16 +58,10 @@ const period = ref<Period>('daily')
       <UDashboardToolbar>
         <template #left>
           <!-- ~/components/home/HomeDateRangePicker.vue -->
-          <HomeDateRangePicker
-            v-model="range"
-            class="-ml-2.5"
-          />
-
-          <!-- ~/components/home/HomePeriodSelect.vue -->
-          <HomePeriodSelect
-            v-model="period"
-            :range="range"
-          />
+          <div class="text-xs">Version:</div>
+          <div class="text-xs">Kubernetes Provider:</div>
+          <div class="text-xs">Architecture:</div>
+          <div class="text-xs">Created At:</div>
         </template>
       </UDashboardToolbar>
 

@@ -41,3 +41,12 @@ export interface Range {
   start: Date
   end: Date
 }
+
+export interface ModelFile {
+  id: string
+  type: string
+  kind: string
+  metadata: object
+  spec: object
+  status: object
+}
