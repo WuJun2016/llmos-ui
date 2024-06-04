@@ -1,8 +1,8 @@
-import { reactive } from 'vue'
-import type { DeepReadonly } from 'vue'
-import type { IResource } from '@/composables/steve/types'
-import ResourceImpl from '@/models/resource'
-import { uniq } from '@/utils/array'
+import { reactive } from "vue";
+import type { DeepReadonly } from "vue";
+import type { IResource } from "@/composables/steve/types";
+import ResourceImpl from "@/models/resource";
+import { uniq } from "@/utils/array";
 
 declare global {
   type IWritable<D> = IResource & DecoratedResource & D;
@@ -10,9 +10,9 @@ declare global {
   type IStored<D> = DeepReadonly<IWritable<D>>;
 }
 
-const resourceKeys = Object.keys(ResourceImpl)
-const modelImplCache: Map<string, any> = new Map()
-let lastId = 1
+const resourceKeys = Object.keys(ResourceImpl);
+const modelImplCache: Map<string, any> = new Map();
+let lastId = 1;
 
 /**
  * Decorates a resource object with additional properties and methods.
@@ -20,66 +20,73 @@ let lastId = 1
  * @param store - The store object.
  * @returns A promise that resolves to the decorated resource object.
  */
-export default async function decorate<T extends IResource, D extends DecoratedResource>(data: T, store: any): Promise<IWritable<D>> {
-  let keys: string[]
-  let ModelImpl = null
+export default async function decorate<
+  T extends IResource,
+  D extends DecoratedResource
+>(data: T, store: any): Promise<IWritable<D>> {
+  let keys: string[];
+  let ModelImpl = null;
 
-  if ( !data ) {
-    data = {} as T
+  if (!data) {
+    data = {} as T;
   }
 
-  if ( data.__decorated ) {
-    throw new Error('Already decorated')
+  if (data.__decorated) {
+    throw new Error("Already decorated");
   }
 
-  if ( !data.type ) {
-    throw new Error(`Missing type: ${ JSON.stringify(data) }`)
+  if (!data.type) {
+    throw new Error(`Missing type: ${JSON.stringify(data)}`);
   }
 
-  if ( data.type !== 'resource' ) {
-    if ( modelImplCache.has(data.type) ) {
-      ModelImpl = modelImplCache.get(data.type)
+  if (data.type !== "resource") {
+    if (modelImplCache.has(data.type)) {
+      ModelImpl = modelImplCache.get(data.type);
     } else {
       try {
         // https://github.com/rollup/plugins/tree/master/packages/dynamic-import-vars#limitations
-        ModelImpl = (await import(`../../models/${ data.type }.ts`))?.default
-        modelImplCache.set(data.type, ModelImpl)
+        ModelImpl = (await import(`../../models/${data.type}.ts`))?.default;
+        modelImplCache.set(data.type, ModelImpl);
       } catch (e) {
-        modelImplCache.set(data.type, null)
+        modelImplCache.set(data.type, null);
       }
     }
   }
 
-  if ( ModelImpl ) {
-    keys = uniq([...resourceKeys, ...Object.keys(ModelImpl)])
+  if (ModelImpl) {
+    keys = uniq([...resourceKeys, ...Object.keys(ModelImpl)]);
   } else {
-    keys = resourceKeys
+    keys = resourceKeys;
   }
 
-  const out: IWritable<D> = <any>reactive(data)
+  const out: IWritable<D> = <any>reactive(data);
 
-  for ( const k of keys ) {
-    let alsoInModel = false
+  for (const k of keys) {
+    let alsoInModel = false;
 
-    if ( ModelImpl?.[k] ) {
-      alsoInModel = true
+    if (ModelImpl?.[k]) {
+      alsoInModel = true;
       Object.defineProperty(out, k, {
         configurable: true,
-        enumerable:   false,
-        value:        ModelImpl[k].call(out, store),
-      })
+        enumerable: false,
+        value: ModelImpl[k].call(out, store),
+      });
     }
 
-    if ( k in ResourceImpl ) {
-      Object.defineProperty(out, alsoInModel ? `_super_${ k }` : k, {
+    if (k in ResourceImpl) {
+      Object.defineProperty(out, alsoInModel ? `_super_${k}` : k, {
         configurable: true,
-        enumerable:   false,
-        value:        (ResourceImpl as any)[k].call(out, store),
-      })
+        enumerable: false,
+        value: (ResourceImpl as any)[k].call(out, store),
+      });
     }
   }
 
-  Object.defineProperty(out, '__decorated', { configurable: false, enumerable: false, value: lastId++ })
+  Object.defineProperty(out, "__decorated", {
+    configurable: false,
+    enumerable: false,
+    value: lastId++,
+  });
 
-  return out
+  return out;
 }

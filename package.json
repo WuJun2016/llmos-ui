@@ -17,6 +17,8 @@
   "dependencies": {
     "@nuxt/ui": "2.11.1",
     "dayjs": "^1.11.10",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
     "nuxt": "^3.8.2"
   },
   "devDependencies": {
